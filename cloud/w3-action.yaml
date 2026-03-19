@@ -1,0 +1,170 @@
+kind: primitive
+name: W3.cloud Storage
+version: 0.1.0
+repo: w3-io/w3-actions
+path: cloud
+commands:
+  - name: upload
+    description: Upload a file or data to a bucket.
+    inputs:
+      bucket:
+        type: string
+        required: true
+        description: Bucket name
+      key:
+        type: string
+        required: true
+        description: Object key (path within bucket)
+      body:
+        type: string
+        required: false
+        description: Content to upload (string)
+      body-file:
+        type: string
+        required: false
+        description: Path to file to upload
+      content-type:
+        type: string
+        required: false
+        description: Content-Type header
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, key, size, etag}"
+
+  - name: download
+    description: Download an object from a bucket.
+    inputs:
+      bucket:
+        type: string
+        required: true
+      key:
+        type: string
+        required: true
+      output-file:
+        type: string
+        required: false
+        description: Path to write downloaded content to
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, key, size, content, contentBase64}"
+
+  - name: delete
+    description: Delete an object from a bucket.
+    inputs:
+      bucket:
+        type: string
+        required: true
+      key:
+        type: string
+        required: true
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, key, deleted}"
+
+  - name: list
+    description: List objects in a bucket with optional prefix filter.
+    inputs:
+      bucket:
+        type: string
+        required: true
+      prefix:
+        type: string
+        required: false
+      max-keys:
+        type: number
+        required: false
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, prefix, objects: [{key, size}], count, truncated}"
+
+  - name: list-buckets
+    description: List all buckets in the account.
+    inputs: {}
+    outputs:
+      result:
+        type: object
+        description: "{status, buckets: [string], count}"
+
+  - name: create-bucket
+    description: Create a new bucket.
+    inputs:
+      bucket:
+        type: string
+        required: true
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, created}"
+
+  - name: delete-bucket
+    description: Delete an empty bucket.
+    inputs:
+      bucket:
+        type: string
+        required: true
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, deleted}"
+
+  - name: head
+    description: Get object or bucket metadata without downloading content.
+    inputs:
+      bucket:
+        type: string
+        required: true
+      key:
+        type: string
+        required: false
+    outputs:
+      result:
+        type: object
+        description: "{status, bucket, key, exists, metadata}"
+
+  - name: presign
+    description: Generate a presigned URL for temporary access to an object.
+    inputs:
+      bucket:
+        type: string
+        required: true
+      key:
+        type: string
+        required: true
+      expires:
+        type: number
+        required: false
+        description: URL validity in seconds (default 3600)
+      method:
+        type: string
+        required: false
+        description: HTTP method (GET or PUT, default GET)
+    outputs:
+      result:
+        type: object
+        description: "{url, method, bucket, key, expires, validUntil}"
+
+  - name: copy
+    description: Copy an object within or across buckets.
+    inputs:
+      source-bucket:
+        type: string
+        required: true
+      source-key:
+        type: string
+        required: true
+      bucket:
+        type: string
+        required: true
+        description: Destination bucket
+      key:
+        type: string
+        required: true
+        description: Destination key
+    outputs:
+      result:
+        type: object
+        description: "{status, source, destination, copied}"

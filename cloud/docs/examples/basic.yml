@@ -1,0 +1,54 @@
+name: W3.cloud storage example
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: Message to store
+        required: true
+        default: "Hello from W3.cloud!"
+
+jobs:
+  store-and-share:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Upload message
+        id: upload
+        uses: w3-io/w3-actions/cloud@v0
+        with:
+          command: upload
+          access-key: ${{ secrets.W3_CLOUD_ACCESS_KEY }}
+          secret-key: ${{ secrets.W3_CLOUD_SECRET_KEY }}
+          bucket: my-bucket
+          key: messages/${{ github.run_id }}.txt
+          body: ${{ inputs.message }}
+
+      - name: Generate share link (24 hours)
+        id: share
+        uses: w3-io/w3-actions/cloud@v0
+        with:
+          command: presign
+          access-key: ${{ secrets.W3_CLOUD_ACCESS_KEY }}
+          secret-key: ${{ secrets.W3_CLOUD_SECRET_KEY }}
+          bucket: my-bucket
+          key: messages/${{ github.run_id }}.txt
+          expires: '86400'
+
+      - name: Show results
+        run: |
+          echo "Uploaded: ${{ fromJSON(steps.upload.outputs.result).size }} bytes"
+          echo "Share URL: ${{ fromJSON(steps.share.outputs.result).url }}"
+
+      - name: List all messages
+        id: list
+        uses: w3-io/w3-actions/cloud@v0
+        with:
+          command: list
+          access-key: ${{ secrets.W3_CLOUD_ACCESS_KEY }}
+          secret-key: ${{ secrets.W3_CLOUD_SECRET_KEY }}
+          bucket: my-bucket
+          prefix: messages/
+
+      - name: Show stored messages
+        run: echo '${{ steps.list.outputs.result }}' | jq '.objects[].key'
