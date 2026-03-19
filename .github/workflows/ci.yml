@@ -23,6 +23,14 @@ jobs:
       - name: Configure git for private deps
         run: |
           git config --global url."https://x-access-token:${{ secrets.PROTOCOL_ACCESS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+
+      - name: Set Cargo to use git CLI
+        run: |
+          mkdir -p ~/.cargo
+          echo '[net]' >> ~/.cargo/config.toml
+          echo 'git-fetch-with-cli = true' >> ~/.cargo/config.toml
 
       - name: Install wasm-pack
         run: cargo install wasm-pack

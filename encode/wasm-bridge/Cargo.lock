@@ -197,7 +197,7 @@ dependencies = [
 [[package]]
 name = "w3io-encode-core"
 version = "0.1.0"
-source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#3fd7602139173ff09d175784047264d006d52982"
+source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#84c1d833b2ac38c5c7f2ea2f73fa760a763a2a67"
 dependencies = [
  "base64",
  "hex",
