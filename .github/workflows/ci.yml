@@ -20,6 +20,10 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - name: Configure git for private deps
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.PROTOCOL_ACCESS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
       - name: Install wasm-pack
         run: cargo install wasm-pack
 

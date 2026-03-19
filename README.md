@@ -112,10 +112,24 @@ to this repo to trigger a rebuild. This requires a GitHub PAT:
 1. Go to https://github.com/settings/tokens?type=beta (fine-grained PAT)
 2. Create a token with:
    - **Name:** `w3-actions-dispatch`
+   - **Resource owner:** `w3-io`
    - **Repository access:** `w3-io/w3-actions` only
    - **Permissions:** Contents (read/write), Metadata (read)
 3. Go to https://github.com/w3-io/protocol/settings/secrets/actions
 4. Add secret: **Name:** `W3_ACTIONS_DISPATCH_TOKEN`, **Value:** the PAT
+
+### 1b. Protocol access token (for CI to fetch git deps)
+
+The WASM bridge crates depend on the protocol repo via git. CI needs
+a token to clone it.
+
+1. Create another fine-grained PAT (or reuse one with broader scope):
+   - **Name:** `w3-actions-protocol-read`
+   - **Resource owner:** `w3-io`
+   - **Repository access:** `w3-io/protocol` only
+   - **Permissions:** Contents (read), Metadata (read)
+2. Go to https://github.com/w3-io/w3-actions/settings/secrets/actions
+3. Add secret: **Name:** `PROTOCOL_ACCESS_TOKEN`, **Value:** the PAT
 
 To verify it works:
 
