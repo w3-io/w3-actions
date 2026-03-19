@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  repository_dispatch:
+    types: [wasm-updated]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Determine WASM source
+        id: wasm-source
+        run: |
+          CONFIG=".github/wasm-source.json"
+          RUN_ID=$(python3 -c "
+          import json
+          with open('$CONFIG') as f:
+              config = json.load(f)
+          run_id = config.get('protocol-run-id')
+          print(run_id if run_id else '')
+          ")
+
+          REF=$(python3 -c "
+          import json
+          with open('$CONFIG') as f:
+              config = json.load(f)
+          print(config.get('protocol-ref', 'master'))
+          ")
+
+          # repository_dispatch overrides config
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            RUN_ID="${{ github.event.client_payload.run_id }}"
+            echo "Source: repository_dispatch (run $RUN_ID)"
+          elif [ -n "$RUN_ID" ]; then
+            echo "Source: wasm-source.json (run $RUN_ID)"
+          else
+            echo "Source: wasm-source.json (ref $REF)"
+          fi
+
+          echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+
+      - name: Download WASM from artifact
+        if: steps.wasm-source.outputs.run-id != ''
+        run: |
+          ./scripts/build-wasm.sh --from-artifact "${{ steps.wasm-source.outputs.run-id }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download WASM from ref
+        if: steps.wasm-source.outputs.run-id == ''
+        run: |
+          ./scripts/build-wasm.sh --from-ref "${{ steps.wasm-source.outputs.ref }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify WASM files present
+        run: |
+          for action in http json encode emit audit; do
+            wasm=$(ls "$action/wasm/"*.wasm 2>/dev/null | head -1)
+            if [ -z "$wasm" ]; then
+              echo "ERROR: No WASM file in $action/wasm/"
+              exit 1
+            fi
+            size=$(wc -c < "$wasm" | tr -d ' ')
+            echo "OK: $action — $(basename "$wasm") ($size bytes)"
+          done
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint

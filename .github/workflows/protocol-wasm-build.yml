@@ -1,0 +1,115 @@
+# Protocol WASM Build
+#
+# This workflow is designed to run IN THE PROTOCOL REPO, not here.
+# Copy this to protocol/.github/workflows/build-wasm.yml when ready.
+#
+# It builds WASM artifacts from the action primitive crates and
+# uploads them as GitHub Actions artifacts. The w3-actions repo
+# downloads these artifacts via the build-wasm.sh script.
+#
+# Triggers:
+#   - On PRs that touch src/lib/*-core/
+#   - On push to master (publishes "latest" artifacts)
+#   - On manual dispatch
+
+name: Build WASM
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/lib/http-core/**'
+      - 'src/lib/json-core/**'
+      - 'src/lib/encode-core/**'
+      - 'src/lib/emit-core/**'
+      - 'src/lib/audit-core/**'
+  pull_request:
+    paths:
+      - 'src/lib/http-core/**'
+      - 'src/lib/json-core/**'
+      - 'src/lib/encode-core/**'
+      - 'src/lib/emit-core/**'
+      - 'src/lib/audit-core/**'
+  workflow_dispatch:
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: wasm-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build WASM (release)
+        run: |
+          for crate in w3io-http-core w3io-json-core w3io-encode-core w3io-emit-core w3io-audit-core; do
+            echo "Building $crate..."
+            cargo build --target wasm32-unknown-unknown --release -p "$crate"
+          done
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p wasm-artifacts
+          for crate in w3io_http_core w3io_json_core w3io_encode_core w3io_emit_core w3io_audit_core; do
+            wasm="target/wasm32-unknown-unknown/release/$crate.wasm"
+            if [ -f "$wasm" ]; then
+              cp "$wasm" wasm-artifacts/
+              size=$(wc -c < "$wasm" | tr -d ' ')
+              echo "$crate: $size bytes"
+            else
+              echo "WARNING: $wasm not found"
+            fi
+          done
+
+      - name: Check artifact sizes
+        run: |
+          MAX_SIZE=2097152  # 2MB per crate
+          for wasm in wasm-artifacts/*.wasm; do
+            size=$(wc -c < "$wasm" | tr -d ' ')
+            name=$(basename "$wasm")
+            if [ "$size" -gt "$MAX_SIZE" ]; then
+              echo "ERROR: $name is $size bytes (max $MAX_SIZE)"
+              exit 1
+            fi
+            echo "OK: $name ($size bytes)"
+          done
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-artifacts
+          path: wasm-artifacts/
+          retention-days: 90
+
+      - name: Verify WASM check passes for all crates
+        run: |
+          for crate in w3io-http-core w3io-json-core w3io-encode-core w3io-emit-core w3io-audit-core; do
+            echo "Checking $crate..."
+            cargo check --target wasm32-unknown-unknown -p "$crate"
+          done
+
+  # On master push, notify w3-actions repo
+  notify-w3-actions:
+    needs: build-wasm
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger w3-actions update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.W3_ACTIONS_DISPATCH_TOKEN }}
+          repository: w3-io/w3-actions
+          event-type: wasm-updated
+          client-payload: '{"run_id": "${{ github.run_id }}", "sha": "${{ github.sha }}"}'

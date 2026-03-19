@@ -1,0 +1,5 @@
+node_modules/
+target/
+*/wasm-bridge/target/
+*/wasm-bridge/pkg/
+.env

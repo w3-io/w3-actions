@@ -1,0 +1,12 @@
+{
+  "protocol-repo": "w3-io/protocol",
+  "protocol-ref": "master",
+  "protocol-run-id": null,
+  "crates": [
+    { "name": "w3io-http-core", "action": "http" },
+    { "name": "w3io-json-core", "action": "json" },
+    { "name": "w3io-encode-core", "action": "encode" },
+    { "name": "w3io-emit-core", "action": "emit" },
+    { "name": "w3io-audit-core", "action": "audit" }
+  ]
+}
