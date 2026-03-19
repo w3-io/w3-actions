@@ -102,6 +102,51 @@ a release is cut automatically.
 - **Verification:** CI checks that all crates compile to `wasm32-unknown-unknown`
   on every protocol PR touching `src/lib/*-core/`.
 
+## Setup (one-time, for repo admins)
+
+### 1. Cross-repo dispatch token
+
+When the protocol merges changes to action crates, its CI dispatches
+to this repo to trigger a rebuild. This requires a GitHub PAT:
+
+1. Go to https://github.com/settings/tokens?type=beta (fine-grained PAT)
+2. Create a token with:
+   - **Name:** `w3-actions-dispatch`
+   - **Repository access:** `w3-io/w3-actions` only
+   - **Permissions:** Contents (read/write), Metadata (read)
+3. Go to https://github.com/w3-io/protocol/settings/secrets/actions
+4. Add secret: **Name:** `W3_ACTIONS_DISPATCH_TOKEN`, **Value:** the PAT
+
+To verify it works:
+
+```bash
+# Trigger a dispatch manually
+gh api repos/w3-io/w3-actions/dispatches \
+  -f event_type=wasm-updated \
+  -f 'client_payload[run_id]=0' \
+  -f 'client_payload[sha]=test'
+```
+
+Then check https://github.com/w3-io/w3-actions/actions for a triggered run.
+
+### 2. After protocol PR merges
+
+When `audie/w3-action-primitives` merges to master:
+
+1. Update each `wasm-bridge/Cargo.toml` to use `branch = "master"`
+   instead of `branch = "audie/w3-action-primitives"`
+2. Run `cargo update` in each bridge crate
+3. Verify local build: `./scripts/build-wasm.sh --from ../protocol`
+4. Commit, push, tag `v0.1.0` + `v0`
+
+### 3. Release checklist
+
+- [ ] All five WASM bridges build cleanly
+- [ ] CI passes (WASM build + inline tests)
+- [ ] `W3_ACTIONS_DISPATCH_TOKEN` secret configured in protocol repo
+- [ ] Bridge Cargo.toml references master (not feature branch)
+- [ ] Tagged `v0.1.0` and `v0`
+
 ## Contributing
 
 The Rust logic lives in the [protocol repo](https://github.com/w3-io/protocol)
@@ -110,6 +155,6 @@ under `src/lib/*-core/`. Changes to action behavior start there.
 This repo contains:
 - `{action}/action.yml` — GHA input/output contract
 - `{action}/src/index.js` — JS wrapper that loads WASM
-- `{action}/wasm/` — compiled WASM (from protocol CI, not hand-edited)
+- `{action}/wasm-bridge/` — Rust cdylib that wraps the core crate via wasm-bindgen
 - `scripts/` — build and download tooling
-- `.github/wasm-source.json` — which protocol build to use
+- `.github/wasm-source.json` — which protocol ref to use
