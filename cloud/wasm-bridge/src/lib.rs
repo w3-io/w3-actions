@@ -118,6 +118,22 @@ pub fn build_upload_request(
     Ok(result.to_string())
 }
 
+/// Build a list-buckets request (unsigned).
+#[wasm_bindgen]
+pub fn build_list_buckets_request(endpoint: &str) -> Result<String, JsError> {
+    let request = CloudOperation::ListBuckets
+        .to_request(endpoint)
+        .map_err(|e| JsError::new(&e.to_string()))?;
+
+    let result = serde_json::json!({
+        "method": request.method,
+        "path": request.path,
+        "headers": request.headers,
+    });
+
+    Ok(result.to_string())
+}
+
 /// Build a list-objects request (unsigned).
 #[wasm_bindgen]
 pub fn build_list_request(
@@ -134,6 +150,7 @@ pub fn build_list_request(
             Some(prefix.to_string())
         },
         max_keys: if max_keys == 0 { None } else { Some(max_keys) },
+        continuation_token: None,
     };
 
     let request = op
