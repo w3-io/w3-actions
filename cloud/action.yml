@@ -1,0 +1,76 @@
+name: 'W3 Cloud Action'
+description: 'Decentralized storage via W3.cloud — upload, download, list, share, and manage objects and buckets'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: upload, download, delete, list, list-buckets, create-bucket, delete-bucket, head, presign, copy'
+    required: true
+  access-key:
+    description: 'W3.cloud access key'
+    required: true
+  secret-key:
+    description: 'W3.cloud secret key'
+    required: true
+  endpoint:
+    description: 'Gateway endpoint override'
+    required: false
+    default: 'https://gateway.w3.cloud'
+  region:
+    description: 'Region (default: global)'
+    required: false
+    default: 'global'
+
+  # Object operations
+  bucket:
+    description: 'Bucket name'
+    required: false
+  key:
+    description: 'Object key (path within bucket)'
+    required: false
+  body:
+    description: 'Content to upload (string). For files, use body-file instead.'
+    required: false
+  body-file:
+    description: 'Path to file to upload'
+    required: false
+  content-type:
+    description: 'Content-Type header for upload (default: application/octet-stream)'
+    required: false
+  output-file:
+    description: 'Path to write downloaded content to'
+    required: false
+
+  # List operations
+  prefix:
+    description: 'Key prefix filter for list command'
+    required: false
+  max-keys:
+    description: 'Maximum objects to return (default: 1000)'
+    required: false
+
+  # Presign
+  expires:
+    description: 'Presigned URL validity in seconds (default: 3600)'
+    required: false
+    default: '3600'
+  method:
+    description: 'HTTP method for presigned URL (GET or PUT, default: GET)'
+    required: false
+    default: 'GET'
+
+  # Copy
+  source-bucket:
+    description: 'Source bucket for copy'
+    required: false
+  source-key:
+    description: 'Source key for copy'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON result of the operation'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'
