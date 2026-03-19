@@ -1,0 +1,36 @@
+name: 'W3 Emit Action'
+description: 'Event emission with webhook delivery and HMAC-SHA256 signatures'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: emit'
+    required: true
+    default: 'emit'
+  name:
+    description: 'Event name (e.g. "fraud_detected", "price_threshold_crossed")'
+    required: true
+  payload:
+    description: 'Event payload as JSON string'
+    required: false
+    default: '{}'
+  webhook-url:
+    description: 'Webhook URL to deliver the event to'
+    required: true
+  webhook-secret:
+    description: 'Secret for HMAC-SHA256 signature (optional)'
+    required: false
+  source:
+    description: 'Source workflow name'
+    required: false
+  step:
+    description: 'Source step name'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON result with event body and signature'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'

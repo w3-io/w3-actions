@@ -1,0 +1,15 @@
+{
+  "name": "w3-actions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-wasm": "./scripts/build-wasm.sh --from ../protocol",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "echo 'TODO: add eslint'"
+  },
+  "devDependencies": {
+    "@actions/core": "^1.11.1",
+    "jest": "^29.7.0"
+  }
+}

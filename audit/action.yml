@@ -1,0 +1,36 @@
+name: 'W3 Audit Action'
+description: 'Append-only audit trail entries with monotonic sequencing'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: log'
+    required: true
+    default: 'log'
+  category:
+    description: 'Event category (e.g. "action_executed", "secret_accessed")'
+    required: true
+  message:
+    description: 'Human-readable description'
+    required: true
+  data:
+    description: 'Structured data payload as JSON'
+    required: false
+    default: '{}'
+  workflow:
+    description: 'Source workflow name'
+    required: false
+  job:
+    description: 'Source job name'
+    required: false
+  step:
+    description: 'Source step name'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON audit entry with sequence number'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'

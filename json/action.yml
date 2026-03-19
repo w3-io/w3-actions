@@ -1,0 +1,34 @@
+name: 'W3 JSON Action'
+description: 'JSON transform primitives — extract, merge, filter, map, flatten, pick'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: extract, merge, filter, map-field, count, flatten, pick'
+    required: true
+  input:
+    description: 'Input JSON string'
+    required: true
+  path:
+    description: 'Dot-separated path for extract (e.g. "user.name")'
+    required: false
+  overlay:
+    description: 'Overlay JSON for merge'
+    required: false
+  field:
+    description: 'Field name for filter and map-field'
+    required: false
+  expected:
+    description: 'Expected value JSON for filter'
+    required: false
+  keys:
+    description: 'JSON array of key names for pick'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON result of the operation'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'

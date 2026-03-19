@@ -1,0 +1,22 @@
+name: 'W3 Encode Action'
+description: 'Encoding and hashing primitives — base64, hex, URL, SHA-256, HMAC-SHA256'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: base64-encode, base64-decode, hex-encode, hex-decode, url-encode, url-decode, sha256, hmac-sha256'
+    required: true
+  input:
+    description: 'Input data (string or base64-encoded bytes depending on command)'
+    required: true
+  key:
+    description: 'HMAC key (for hmac-sha256 command only)'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON result of the operation'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'

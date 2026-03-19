@@ -1,0 +1,40 @@
+name: 'W3 HTTP Action'
+description: 'HTTP requests with retry, timeout, and error classification'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: request'
+    required: true
+    default: 'request'
+  method:
+    description: 'HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)'
+    required: false
+    default: 'GET'
+  url:
+    description: 'Target URL'
+    required: true
+  headers:
+    description: 'Request headers as JSON array of [key, value] pairs'
+    required: false
+    default: '[]'
+  max-retries:
+    description: 'Maximum retry attempts (default: 3)'
+    required: false
+    default: '3'
+  retry-delay:
+    description: 'Base retry delay in milliseconds (default: 2000)'
+    required: false
+    default: '2000'
+  timeout:
+    description: 'Request timeout in milliseconds (default: 30000)'
+    required: false
+    default: '30000'
+
+outputs:
+  result:
+    description: 'JSON result: {status, headers, body}'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'
