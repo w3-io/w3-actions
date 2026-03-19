@@ -155,11 +155,14 @@ When `audie/w3-action-primitives` merges to master:
 
 ### 3. Release checklist
 
-- [ ] All five WASM bridges build cleanly
-- [ ] CI passes (WASM build + inline tests)
-- [ ] `W3_ACTIONS_DISPATCH_TOKEN` secret configured in protocol repo
+- [x] All five WASM bridges build cleanly
+- [x] CI passes (WASM build + inline tests)
+- [x] `W3_ACTIONS_DISPATCH_TOKEN` secret configured in protocol repo
+- [x] `PROTOCOL_ACCESS_TOKEN` secret configured in w3-actions repo
+- [ ] Protocol PR #1434 merged
 - [ ] Bridge Cargo.toml references master (not feature branch)
 - [ ] Tagged `v0.1.0` and `v0`
+- [ ] Add primitive actions to MCP registry (`gha-actions` section in w3-mcp/registry.yaml)
 
 ## Contributing
 
