@@ -19,9 +19,13 @@ function host() {
 }
 
 /** Sign and execute an HTTP request against W3.cloud.
- *  extraHeaders are included in the canonical request for signing. */
+ *  extraHeaders are included in the signed canonical request. */
 async function execute(method, path, queryString, body, extraHeaders = {}) {
   const ts = timestamp()
+  const extraJson = Object.keys(extraHeaders).length > 0
+    ? JSON.stringify(Object.entries(extraHeaders))
+    : ''
+
   const signed = JSON.parse(
     wasm.sign_request(
       method,
@@ -33,16 +37,12 @@ async function execute(method, path, queryString, body, extraHeaders = {}) {
       SECRET_KEY,
       REGION,
       ts,
+      extraJson,
     ),
   )
 
   const headers = {}
   for (const [k, v] of signed.headers) headers[k] = v
-  // Add extra headers (e.g. x-amz-copy-source) — these should ideally
-  // be part of the signed canonical request, but W3.cloud/Storj doesn't
-  // enforce strict signature validation on copy headers. If strict
-  // enforcement is needed, sign_request WASM should accept extra headers.
-  Object.assign(headers, extraHeaders)
 
   const url = ENDPOINT + path + (queryString ? `?${queryString}` : '')
   const resp = await fetch(url, {

@@ -43,6 +43,10 @@ fn build_op(op: &CloudOperation, endpoint: &str) -> Result<String, JsError> {
 
 /// Sign a request for W3.cloud storage.
 ///
+/// `extra_headers_json` is a JSON array of `[key, value]` pairs to include
+/// in the signed canonical request (e.g. `x-amz-copy-source`). Pass `"[]"`
+/// or `""` for no extra headers.
+///
 /// Returns JSON: `{method, path, query_string, headers: [[k,v]]}`
 #[wasm_bindgen]
 pub fn sign_request(
@@ -55,7 +59,17 @@ pub fn sign_request(
     secret_key: &str,
     region: &str,
     timestamp: &str,
+    extra_headers_json: &str,
 ) -> Result<String, JsError> {
+    let mut headers = vec![("host".to_string(), host.to_string())];
+
+    // Parse and add extra headers so they're included in the canonical request
+    if !extra_headers_json.is_empty() && extra_headers_json != "[]" {
+        let extra: Vec<(String, String)> = serde_json::from_str(extra_headers_json)
+            .unwrap_or_default();
+        headers.extend(extra);
+    }
+
     let mut request = CloudRequest {
         method: method.to_string(),
         path: path.to_string(),
@@ -64,7 +78,7 @@ pub fn sign_request(
         } else {
             Some(query_string.to_string())
         },
-        headers: vec![("host".to_string(), host.to_string())],
+        headers,
         body,
     };
 
