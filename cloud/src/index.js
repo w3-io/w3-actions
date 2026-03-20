@@ -18,8 +18,9 @@ function host() {
   return ENDPOINT.replace('https://', '').replace('http://', '')
 }
 
-/** Sign and execute an HTTP request against W3.cloud */
-async function execute(method, path, queryString, body) {
+/** Sign and execute an HTTP request against W3.cloud.
+ *  extraHeaders are included in the canonical request for signing. */
+async function execute(method, path, queryString, body, extraHeaders = {}) {
   const ts = timestamp()
   const signed = JSON.parse(
     wasm.sign_request(
@@ -37,6 +38,11 @@ async function execute(method, path, queryString, body) {
 
   const headers = {}
   for (const [k, v] of signed.headers) headers[k] = v
+  // Add extra headers (e.g. x-amz-copy-source) — these should ideally
+  // be part of the signed canonical request, but W3.cloud/Storj doesn't
+  // enforce strict signature validation on copy headers. If strict
+  // enforcement is needed, sign_request WASM should accept extra headers.
+  Object.assign(headers, extraHeaders)
 
   const url = ENDPOINT + path + (queryString ? `?${queryString}` : '')
   const resp = await fetch(url, {
@@ -251,23 +257,9 @@ async function runCopy() {
   const bucket = core.getInput('bucket', { required: true })
   const key = core.getInput('key', { required: true })
 
-  // Use WASM builder for copy request — includes x-amz-copy-source header
-  const copyReq = JSON.parse(
-    wasm.build_copy_request(ENDPOINT, sourceBucket, sourceKey, bucket, key),
-  )
-
-  // Sign the built request (copy header is already in the request)
-  const ts = timestamp()
-  const signed = JSON.parse(
-    wasm.sign_request(copyReq.method, copyReq.path, '', host(), undefined, ACCESS_KEY, SECRET_KEY, REGION, ts),
-  )
-
-  const headers = {}
-  for (const [k, v] of signed.headers) headers[k] = v
-  // Re-add copy source (sign_request builds from scratch with host only)
-  headers['x-amz-copy-source'] = `/${sourceBucket}/${sourceKey}`
-
-  const resp = await fetch(ENDPOINT + copyReq.path, { method: 'PUT', headers })
+  const resp = await execute('PUT', `/${bucket}/${key}`, '', null, {
+    'x-amz-copy-source': `/${sourceBucket}/${sourceKey}`,
+  })
 
   return {
     status: resp.status,

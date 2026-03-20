@@ -91,7 +91,7 @@ pub fn presign_url(
     region: &str,
     timestamp: &str,
     expires_seconds: u64,
-) -> String {
+) -> Result<String, JsError> {
     w3io_cloud_core::auth::presign_url(&PresignParams {
         method,
         endpoint,
@@ -102,6 +102,7 @@ pub fn presign_url(
         timestamp,
         expires_seconds,
     })
+    .map_err(|e| JsError::new(&e.to_string()))
 }
 
 // -------------------------------------------------------------------------
