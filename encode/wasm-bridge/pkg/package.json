@@ -1,0 +1,11 @@
+{
+  "name": "w3-encode-wasm",
+  "version": "0.1.0",
+  "files": [
+    "w3_encode_wasm_bg.wasm",
+    "w3_encode_wasm.js",
+    "w3_encode_wasm.d.ts"
+  ],
+  "main": "w3_encode_wasm.js",
+  "types": "w3_encode_wasm.d.ts"
+}

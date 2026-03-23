@@ -1,0 +1,11 @@
+{
+  "name": "w3-cloud-wasm",
+  "version": "0.1.0",
+  "files": [
+    "w3_cloud_wasm_bg.wasm",
+    "w3_cloud_wasm.js",
+    "w3_cloud_wasm.d.ts"
+  ],
+  "main": "w3_cloud_wasm.js",
+  "types": "w3_cloud_wasm.d.ts"
+}
