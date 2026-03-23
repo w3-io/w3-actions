@@ -253,7 +253,7 @@ dependencies = [
 [[package]]
 name = "w3io-cloud-core"
 version = "0.1.0"
-source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#4591dc347bb9478eb772fb76e0bccdd26c600679"
+source = "git+https://github.com/w3-io/protocol.git?branch=master#64bbd28f759bece5168eddb26aba213a2d206435"
 dependencies = [
  "sha2",
  "thiserror",
@@ -263,7 +263,7 @@ dependencies = [
 [[package]]
 name = "w3io-encode-core"
 version = "0.1.0"
-source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#4591dc347bb9478eb772fb76e0bccdd26c600679"
+source = "git+https://github.com/w3-io/protocol.git?branch=master#64bbd28f759bece5168eddb26aba213a2d206435"
 dependencies = [
  "base64",
  "hex",

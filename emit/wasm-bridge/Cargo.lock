@@ -255,7 +255,7 @@ dependencies = [
 [[package]]
 name = "w3io-emit-core"
 version = "0.1.0"
-source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#84c1d833b2ac38c5c7f2ea2f73fa760a763a2a67"
+source = "git+https://github.com/w3-io/protocol.git?branch=master#64bbd28f759bece5168eddb26aba213a2d206435"
 dependencies = [
  "serde",
  "serde_json",
@@ -266,7 +266,7 @@ dependencies = [
 [[package]]
 name = "w3io-encode-core"
 version = "0.1.0"
-source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#84c1d833b2ac38c5c7f2ea2f73fa760a763a2a67"
+source = "git+https://github.com/w3-io/protocol.git?branch=master#64bbd28f759bece5168eddb26aba213a2d206435"
 dependencies = [
  "base64",
  "hex",

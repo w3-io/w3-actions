@@ -216,7 +216,7 @@ dependencies = [
 [[package]]
 name = "w3io-http-core"
 version = "0.1.0"
-source = "git+https://github.com/w3-io/protocol.git?branch=audie%2Fw3-action-primitives#84c1d833b2ac38c5c7f2ea2f73fa760a763a2a67"
+source = "git+https://github.com/w3-io/protocol.git?branch=master#64bbd28f759bece5168eddb26aba213a2d206435"
 dependencies = [
  "getrandom",
  "serde",

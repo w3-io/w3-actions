@@ -10,8 +10,8 @@ crate-type = ["cdylib"]
 wasm-bindgen = "0.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-w3io-emit-core = { git = "https://github.com/w3-io/protocol.git", branch = "audie/w3-action-primitives" }
-w3io-encode-core = { git = "https://github.com/w3-io/protocol.git", branch = "audie/w3-action-primitives" }
+w3io-emit-core = { git = "https://github.com/w3-io/protocol.git", branch = "master" }
+w3io-encode-core = { git = "https://github.com/w3-io/protocol.git", branch = "master" }
 
 [profile.release]
 opt-level = "s"

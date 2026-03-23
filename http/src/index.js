@@ -5,12 +5,15 @@ const require = createRequire(import.meta.url)
 const wasm = require('../wasm-bridge/pkg/w3_http_wasm.js')
 
 // JS transport: provides fetch() and sleep() to the WASM retry logic
-async function jsFetch(method, url, headersJson) {
+async function jsFetch(method, url, headersJson, requestBody) {
   const headers = JSON.parse(headersJson || '[]')
   const headerObj = {}
   for (const [k, v] of headers) headerObj[k] = v
 
-  const resp = await fetch(url, { method, headers: headerObj })
+  const opts = { method, headers: headerObj }
+  if (requestBody) opts.body = requestBody
+
+  const resp = await fetch(url, opts)
   const body = await resp.text()
   const respHeaders = JSON.stringify([...resp.headers.entries()])
 
@@ -26,6 +29,7 @@ async function run() {
     const method = core.getInput('method') || 'GET'
     const url = core.getInput('url', { required: true })
     const headersJson = core.getInput('headers') || '[]'
+    const body = core.getInput('body') || ''
     const maxRetries = parseInt(core.getInput('max-retries') || '3')
     const retryDelay = parseInt(core.getInput('retry-delay') || '2000')
     const timeout = parseInt(core.getInput('timeout') || '30000')
@@ -37,6 +41,7 @@ async function run() {
       method,
       url,
       headersJson,
+      body,
       maxRetries,
       retryDelay,
       timeout,
