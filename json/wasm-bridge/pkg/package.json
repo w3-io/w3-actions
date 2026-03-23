@@ -1,0 +1,11 @@
+{
+  "name": "w3-json-wasm",
+  "version": "0.1.0",
+  "files": [
+    "w3_json_wasm_bg.wasm",
+    "w3_json_wasm.js",
+    "w3_json_wasm.d.ts"
+  ],
+  "main": "w3_json_wasm.js",
+  "types": "w3_json_wasm.d.ts"
+}
