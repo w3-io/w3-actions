@@ -18,6 +18,10 @@ inputs:
     description: 'Request headers as JSON array of [key, value] pairs'
     required: false
     default: '[]'
+  body:
+    description: 'Request body (string or JSON). Sent as-is for POST, PUT, PATCH.'
+    required: false
+    default: ''
   max-retries:
     description: 'Maximum retry attempts (default: 3)'
     required: false

@@ -44,15 +44,22 @@ impl HttpTransport for JsTransport {
         };
 
         let headers_json = serde_json::to_string(&request.headers).unwrap_or_default();
+        let body_str = request
+            .body
+            .as_ref()
+            .and_then(|b| String::from_utf8(b.clone()).ok())
+            .unwrap_or_default();
+
+        let args = js_sys::Array::of4(
+            &JsValue::from_str(method),
+            &JsValue::from_str(&request.url),
+            &JsValue::from_str(&headers_json),
+            &JsValue::from_str(&body_str),
+        );
 
         let promise: Promise = self
             .fetch_fn
-            .call3(
-                &JsValue::NULL,
-                &JsValue::from_str(method),
-                &JsValue::from_str(&request.url),
-                &JsValue::from_str(&headers_json),
-            )
+            .apply(&JsValue::NULL, &args)
             .map_err(|e| HttpError::Transport(format!("fetch call failed: {e:?}")))?
             .into();
 
@@ -102,7 +109,7 @@ impl HttpTransport for JsTransport {
 
 /// Execute an HTTP request with retry logic.
 ///
-/// `fetch_fn`: JS function `(method, url, headers_json) => Promise<{status, headers, body}>`
+/// `fetch_fn`: JS function `(method, url, headers_json, body) => Promise<{status, headers, body}>`
 /// `sleep_fn`: JS function `(ms) => Promise<void>`
 ///
 /// Returns JSON: `{"status": number, "headers": [[k,v]], "body": "string"}`
@@ -113,6 +120,7 @@ pub async fn execute(
     method: &str,
     url: &str,
     headers_json: &str,
+    body: &str,
     max_retries: u32,
     base_delay_ms: u32,
     timeout_ms: u32,
@@ -141,11 +149,17 @@ pub async fn execute(
     let headers: Vec<(String, String)> =
         serde_json::from_str(headers_json).unwrap_or_default();
 
+    let request_body = if body.is_empty() {
+        None
+    } else {
+        Some(body.as_bytes().to_vec())
+    };
+
     let request = HttpRequest {
         method: http_method,
         url: url.to_string(),
         headers,
-        body: None,
+        body: request_body,
     };
 
     let client = w3io_http_core::HttpClient::new(
