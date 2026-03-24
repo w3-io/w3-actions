@@ -27434,7 +27434,7 @@ const external_module_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.
 
 
 const src_require = (0,external_module_namespaceObject.createRequire)(import.meta.url)
-const wasm = src_require('../wasm-bridge/pkg/w3_http_wasm.js')
+const wasm = src_require('./wasm-bridge/pkg/w3_http_wasm.js')
 
 // JS transport: provides fetch() and sleep() to the WASM retry logic
 async function jsFetch(method, url, headersJson, requestBody) {
