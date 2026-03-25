@@ -2,7 +2,7 @@
 
 Runtime primitive actions for W3 workflows. These are the built-in
 operations that every workflow can use — HTTP requests, JSON transforms,
-encoding, event emission, and audit logging.
+encoding, and event emission.
 
 Each action is backed by a Rust crate compiled to WASM, ensuring
 identical behavior on the W3 runtime (native Rust) and GitHub Actions
@@ -16,7 +16,6 @@ runners (WASM in Node.js).
 | [json](json/) | Extract, merge, filter, map JSON data | `w3-io/w3-actions/json@v0` |
 | [encode](encode/) | Base64, hex, URL, SHA-256, HMAC | `w3-io/w3-actions/encode@v0` |
 | [emit](emit/) | Event emission + webhook delivery | `w3-io/w3-actions/emit@v0` |
-| [audit](audit/) | Append-only audit trail | `w3-io/w3-actions/audit@v0` |
 | [cloud](cloud/) | W3.cloud decentralized storage (S3-compatible) | `w3-io/w3-actions/cloud@v0` |
 
 ## Architecture
