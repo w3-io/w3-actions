@@ -1,0 +1,46 @@
+name: 'W3 Crypto Action'
+description: 'Cryptographic primitives — AES-256-GCM, Ed25519, keccak-256, HKDF, JWT, TOTP'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: 'Operation: aes-encrypt, aes-decrypt, ed25519-sign, ed25519-verify, ed25519-public-key, keccak-256, hkdf, jwt-create, jwt-verify, totp'
+    required: true
+  key:
+    description: 'Key material (hex for AES/Ed25519/HKDF, raw string for HS256 JWT)'
+    required: false
+  input:
+    description: 'Input data (hex-encoded for binary operations, raw string for JWT claims)'
+    required: false
+  signature:
+    description: 'Signature to verify (hex-encoded, for ed25519-verify)'
+    required: false
+  algorithm:
+    description: 'JWT algorithm: HS256 or EdDSA (for jwt-create, jwt-verify)'
+    required: false
+  salt:
+    description: 'HKDF salt (hex-encoded, optional)'
+    required: false
+  info:
+    description: 'HKDF info (hex-encoded, optional)'
+    required: false
+  length:
+    description: 'HKDF output length in bytes'
+    required: false
+  secret:
+    description: 'TOTP secret (base32-encoded)'
+    required: false
+  time:
+    description: 'Unix timestamp in seconds (for TOTP, JWT verify)'
+    required: false
+  token:
+    description: 'JWT token to verify (for jwt-verify)'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON result of the operation'
+
+runs:
+  using: 'node20'
+  main: 'src/index.js'
