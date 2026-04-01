@@ -12,9 +12,10 @@ runners (WASM in Node.js).
 
 | Action | Description | Uses |
 |--------|-------------|------|
+| [crypto](crypto/) | AES-256-GCM, Ed25519, keccak-256, HKDF, JWT, TOTP | `w3-io/w3-actions/crypto@v0` |
+| [encode](encode/) | Base64, hex, URL, SHA-256, HMAC | `w3-io/w3-actions/encode@v0` |
 | [http](http/) | HTTP requests with retry, timeout, auth | `w3-io/w3-actions/http@v0` |
 | [json](json/) | Extract, merge, filter, map JSON data | `w3-io/w3-actions/json@v0` |
-| [encode](encode/) | Base64, hex, URL, SHA-256, HMAC | `w3-io/w3-actions/encode@v0` |
 | [emit](emit/) | Event emission + webhook delivery | `w3-io/w3-actions/emit@v0` |
 | [cloud](cloud/) | W3.cloud decentralized storage (S3-compatible) | `w3-io/w3-actions/cloud@v0` |
 
