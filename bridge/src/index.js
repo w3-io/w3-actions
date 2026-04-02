@@ -389,6 +389,22 @@ export const solana = {
   waitForTransaction({ network, signature, rpcUrl }) {
     return chainRequest('solana', 'wait-for-transaction', network, { signature, rpcUrl })
   },
+
+  /**
+   * Generate an ephemeral keypair for use as an additional signer.
+   *
+   * The private key is held by the protocol — only the public key
+   * is returned. When `callProgram` is called, all generated keypairs
+   * are automatically included as transaction signers.
+   *
+   * Used for Solana programs that require non-PDA signer accounts
+   * (e.g., Anchor `init` for event data accounts in CCTP).
+   *
+   * @returns {{ pubkey: string }} Base58 public key
+   */
+  generateKeypair() {
+    return request('/solana/generate-keypair', {})
+  },
 }
 
 // ─── Crypto ─────────────────────────────────────────────────────────
