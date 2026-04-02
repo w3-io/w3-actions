@@ -7,3 +7,13 @@ export {
   type CommandHandler,
   type CommandMap,
 } from "./command.js";
+export { bridge, type BridgeResponse } from "./bridge.js";
+export {
+  mockAction,
+  getOutput,
+  expectOutput,
+  expectFailed,
+  expectSuccess,
+  cleanupMock,
+  createMockCore,
+} from "./test.js";

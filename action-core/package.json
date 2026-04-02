@@ -1,6 +1,6 @@
 {
   "name": "@w3-io/action-core",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Shared utilities for W3 action development",
   "type": "module",
   "main": "dist/index.js",
