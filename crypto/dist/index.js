@@ -27891,7 +27891,7 @@ const bridge = {
 const COMMANDS = {
   'keccak-256': async () => {
     const data = lib_core.getInput('input', { required: true })
-    const result = await bridge.crypto('keccak-256', { data })
+    const result = await bridge.crypto('keccak256', { data })
     return { hash: result.hash }
   },
 
@@ -27948,7 +27948,7 @@ const COMMANDS = {
     const algorithm = lib_core.getInput('algorithm', { required: true })
     const claims = lib_core.getInput('input', { required: true })
     const key = lib_core.getInput('key', { required: true })
-    const result = await bridge.crypto('jwt-create', {
+    const result = await bridge.crypto('jwt-sign', {
       claims,
       key,
       algorithm,
