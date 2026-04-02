@@ -1,59 +1,66 @@
 import * as core from '@actions/core'
-import { createRequire } from 'module'
+import { createHash, createHmac } from 'node:crypto'
+import { handleError, setJsonOutput } from '@w3-io/action-core'
 
-const require = createRequire(import.meta.url)
-const wasm = require('../wasm-bridge/pkg/w3_encode_wasm.js')
+/**
+ * Encode action — pure Node.js built-ins, no WASM or external deps.
+ */
 
 const COMMANDS = {
   'base64-encode': () => {
     const input = core.getInput('input', { required: true })
-    return { encoded: wasm.base64_encode(Buffer.from(input)) }
+    return { encoded: Buffer.from(input).toString('base64') }
   },
   'base64-decode': () => {
     const input = core.getInput('input', { required: true })
-    const bytes = wasm.base64_decode(input)
-    return { decoded: Buffer.from(bytes).toString('utf-8') }
+    return { decoded: Buffer.from(input, 'base64').toString('utf-8') }
   },
   'hex-encode': () => {
     const input = core.getInput('input', { required: true })
-    return { encoded: wasm.hex_encode(Buffer.from(input)) }
+    return { encoded: Buffer.from(input).toString('hex') }
   },
   'hex-decode': () => {
     const input = core.getInput('input', { required: true })
-    const bytes = wasm.hex_decode(input)
-    return { decoded: Buffer.from(bytes).toString('utf-8'), bytes: wasm.base64_encode(bytes) }
+    const bytes = Buffer.from(input.replace(/^0x/, ''), 'hex')
+    return {
+      decoded: bytes.toString('utf-8'),
+      bytes: bytes.toString('base64'),
+    }
   },
   'url-encode': () => {
     const input = core.getInput('input', { required: true })
-    return { encoded: wasm.url_encode(input) }
+    return { encoded: encodeURIComponent(input) }
   },
   'url-decode': () => {
     const input = core.getInput('input', { required: true })
-    return { decoded: wasm.url_decode(input) }
+    return { decoded: decodeURIComponent(input) }
   },
   sha256: () => {
     const input = core.getInput('input', { required: true })
-    const hash = wasm.sha256(Buffer.from(input))
-    return { hash: wasm.hex_encode(hash) }
+    const hash = createHash('sha256').update(input).digest('hex')
+    return { hash }
   },
   'hmac-sha256': () => {
     const input = core.getInput('input', { required: true })
     const key = core.getInput('key', { required: true })
-    const mac = wasm.hmac_sha256(Buffer.from(key), Buffer.from(input))
-    return { mac: wasm.hex_encode(mac), signature: `sha256=${wasm.hex_encode(mac)}` }
+    const mac = createHmac('sha256', key).update(input).digest('hex')
+    return { mac, signature: `sha256=${mac}` }
   },
 }
 
-try {
+async function main() {
   const command = core.getInput('command', { required: true })
   const handler = COMMANDS[command]
 
   if (!handler) {
-    core.setFailed(`Unknown command: "${command}". Available: ${Object.keys(COMMANDS).join(', ')}`)
-  } else {
-    const result = handler()
-    core.setOutput('result', JSON.stringify(result))
+    core.setFailed(
+      `Unknown command: "${command}". Available: ${Object.keys(COMMANDS).join(', ')}`,
+    )
+    return
   }
-} catch (error) {
-  core.setFailed(error.message)
+
+  const result = handler()
+  setJsonOutput('result', result)
 }
+
+main().catch(handleError)
