@@ -12,7 +12,7 @@ import { bridge, handleError, setJsonOutput } from '@w3-io/action-core'
 const COMMANDS = {
   'keccak-256': async () => {
     const data = core.getInput('input', { required: true })
-    const result = await bridge.crypto('keccak-256', { data })
+    const result = await bridge.crypto('keccak256', { data })
     return { hash: result.hash }
   },
 
@@ -69,7 +69,7 @@ const COMMANDS = {
     const algorithm = core.getInput('algorithm', { required: true })
     const claims = core.getInput('input', { required: true })
     const key = core.getInput('key', { required: true })
-    const result = await bridge.crypto('jwt-create', {
+    const result = await bridge.crypto('jwt-sign', {
       claims,
       key,
       algorithm,
