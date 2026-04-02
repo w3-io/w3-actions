@@ -370,13 +370,20 @@ export const solana = {
     return chainRequest('solana', 'transfer-token', network, { mint, to, amount, rpcUrl })
   },
 
-  /** Invoke a Solana program instruction. */
-  callProgram({ network, programId, accounts, data, rpcUrl }) {
+  /**
+   * Invoke a Solana program instruction.
+   *
+   * @param {string[]} [ephemeralSignerPubkeys] - Pubkeys of ephemeral keypairs
+   *   (from `generateKeypair`) to include as additional transaction signers.
+   *   Only the specified keypairs are included — not all generated ones.
+   */
+  callProgram({ network, programId, accounts, data, rpcUrl, ephemeralSignerPubkeys }) {
     return chainRequest('solana', 'call-program', network, {
       programId,
       accounts,
       data,
       rpcUrl,
+      ephemeralSignerPubkeys,
     })
   },
 
