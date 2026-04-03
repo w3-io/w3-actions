@@ -176,7 +176,7 @@ export const ethereum = {
   },
 
   /** Call a state-changing contract function (requires signer). */
-  callContract({ network, contract, method, args, abi, value, rpcUrl, gasLimit }) {
+  callContract({ network, contract, method, args, abi, value, rpcUrl, gasLimit, gasMultiplier }) {
     return chainRequest('ethereum', 'call-contract', network, {
       contract,
       method,
@@ -185,6 +185,7 @@ export const ethereum = {
       value,
       rpcUrl,
       gasLimit,
+      gasMultiplier,
     })
   },
 
@@ -209,50 +210,60 @@ export const ethereum = {
   },
 
   /** Transfer ETH. */
-  transfer({ network, to, value, rpcUrl, gasLimit }) {
-    return chainRequest('ethereum', 'transfer', network, { to, value, rpcUrl, gasLimit })
+  transfer({ network, to, value, rpcUrl, gasLimit, gasMultiplier }) {
+    return chainRequest('ethereum', 'transfer', network, {
+      to,
+      value,
+      rpcUrl,
+      gasLimit,
+      gasMultiplier,
+    })
   },
 
   /** Transfer ERC-20 tokens. */
-  transferToken({ network, token, to, amount, rpcUrl, gasLimit }) {
+  transferToken({ network, token, to, amount, rpcUrl, gasLimit, gasMultiplier }) {
     return chainRequest('ethereum', 'transfer-token', network, {
       token,
       to,
       amount,
       rpcUrl,
       gasLimit,
+      gasMultiplier,
     })
   },
 
   /** Approve ERC-20 spending. */
-  approveToken({ network, token, spender, amount, rpcUrl, gasLimit }) {
+  approveToken({ network, token, spender, amount, rpcUrl, gasLimit, gasMultiplier }) {
     return chainRequest('ethereum', 'approve-token', network, {
       token,
       spender,
       amount,
       rpcUrl,
       gasLimit,
+      gasMultiplier,
     })
   },
 
   /** Send raw transaction with calldata. */
-  sendTransaction({ network, to, data, value, rpcUrl, gasLimit }) {
+  sendTransaction({ network, to, data, value, rpcUrl, gasLimit, gasMultiplier }) {
     return chainRequest('ethereum', 'send-transaction', network, {
       to,
       data,
       value,
       rpcUrl,
       gasLimit,
+      gasMultiplier,
     })
   },
 
   /** Deploy a contract from bytecode. */
-  deployContract({ network, bytecode, args, rpcUrl, gasLimit }) {
+  deployContract({ network, bytecode, args, rpcUrl, gasLimit, gasMultiplier }) {
     return chainRequest('ethereum', 'deploy-contract', network, {
       bytecode,
       args,
       rpcUrl,
       gasLimit,
+      gasMultiplier,
     })
   },
 
@@ -292,13 +303,14 @@ export const ethereum = {
   },
 
   /** Transfer ERC-721 NFT. */
-  transferNft({ network, token, tokenId, to, rpcUrl, gasLimit }) {
+  transferNft({ network, token, tokenId, to, rpcUrl, gasLimit, gasMultiplier }) {
     return chainRequest('ethereum', 'transfer-nft', network, {
       token,
       tokenId,
       to,
       rpcUrl,
       gasLimit,
+      gasMultiplier,
     })
   },
 }
@@ -327,8 +339,8 @@ export const bitcoin = {
   },
 
   /** Send BTC. */
-  send({ network, to, amount, feeRate }) {
-    return chainRequest('bitcoin', 'send', network, { to, amount, feeRate })
+  send({ network, to, amount, feeRate, confirmationTarget }) {
+    return chainRequest('bitcoin', 'send', network, { to, amount, feeRate, confirmationTarget })
   },
 
   /** Wait for transaction confirmation. */
@@ -361,13 +373,26 @@ export const solana = {
   },
 
   /** Transfer SOL. */
-  transfer({ network, to, amount, rpcUrl }) {
-    return chainRequest('solana', 'transfer', network, { to, amount, rpcUrl })
+  transfer({ network, to, amount, rpcUrl, computeUnitLimit, computeUnitPrice }) {
+    return chainRequest('solana', 'transfer', network, {
+      to,
+      amount,
+      rpcUrl,
+      computeUnitLimit,
+      computeUnitPrice,
+    })
   },
 
   /** Transfer SPL tokens. */
-  transferToken({ network, mint, to, amount, rpcUrl }) {
-    return chainRequest('solana', 'transfer-token', network, { mint, to, amount, rpcUrl })
+  transferToken({ network, mint, to, amount, rpcUrl, computeUnitLimit, computeUnitPrice }) {
+    return chainRequest('solana', 'transfer-token', network, {
+      mint,
+      to,
+      amount,
+      rpcUrl,
+      computeUnitLimit,
+      computeUnitPrice,
+    })
   },
 
   /**
@@ -377,13 +402,24 @@ export const solana = {
    *   (from `generateKeypair`) to include as additional transaction signers.
    *   Only the specified keypairs are included — not all generated ones.
    */
-  callProgram({ network, programId, accounts, data, rpcUrl, ephemeralSignerPubkeys }) {
+  callProgram({
+    network,
+    programId,
+    accounts,
+    data,
+    rpcUrl,
+    ephemeralSignerPubkeys,
+    computeUnitLimit,
+    computeUnitPrice,
+  }) {
     return chainRequest('solana', 'call-program', network, {
       programId,
       accounts,
       data,
       rpcUrl,
       ephemeralSignerPubkeys,
+      computeUnitLimit,
+      computeUnitPrice,
     })
   },
 
