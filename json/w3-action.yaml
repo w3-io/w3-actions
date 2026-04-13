@@ -1,0 +1,30 @@
+kind: primitive
+name: JSON
+version: 0.1.0
+repo: w3-io/w3-actions
+path: json
+
+description: >
+  Parse, query, transform, and construct JSON data within workflows.
+
+context: >
+  Built-in syscall for data manipulation. Runs in-process — no container
+  overhead. Use between steps to reshape API responses, extract fields,
+  merge objects, or build request bodies. Avoids shell scripting for
+  common data operations.
+
+commands:
+  - name: parse
+    description: Parse a JSON string into a structured value.
+  - name: stringify
+    description: Serialize a value to a JSON string.
+  - name: get
+    description: Extract a value by JSON path.
+  - name: set
+    description: Set a value at a JSON path.
+  - name: merge
+    description: Deep merge two or more JSON objects.
+  - name: array-map
+    description: Transform each element in an array.
+  - name: filter
+    description: Filter array elements by condition.

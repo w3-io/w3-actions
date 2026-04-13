@@ -1,0 +1,32 @@
+kind: primitive
+name: Encode
+version: 0.1.0
+repo: w3-io/w3-actions
+path: encode
+
+description: >
+  Encode and decode data between formats: base64, hex, URL, UTF-8.
+
+context: >
+  Built-in syscall for data encoding. Runs in-process. Use to prepare
+  data for APIs (base64 auth headers), decode blockchain data (hex),
+  or URL-encode query parameters. Pairs with crypto for hash-then-encode
+  patterns.
+
+commands:
+  - name: base64-encode
+    description: Encode data to base64.
+  - name: base64-decode
+    description: Decode base64 to data.
+  - name: hex-encode
+    description: Encode data to hex string.
+  - name: hex-decode
+    description: Decode hex string to data.
+  - name: url-encode
+    description: URL-encode a string.
+  - name: url-decode
+    description: URL-decode a string.
+  - name: utf8-encode
+    description: Encode string to UTF-8 bytes.
+  - name: utf8-decode
+    description: Decode UTF-8 bytes to string.

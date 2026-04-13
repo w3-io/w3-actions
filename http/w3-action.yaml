@@ -1,0 +1,27 @@
+kind: primitive
+name: HTTP
+version: 0.1.0
+repo: w3-io/w3-actions
+path: http
+
+description: >
+  Perform HTTP requests to external APIs from within a W3 workflow.
+
+context: >
+  Built-in syscall, not a GHA action. Runs in-process within the
+  W3 runtime — no Docker container, no cold start. Use for any
+  external API call: webhooks, REST APIs, data fetching.
+
+commands:
+  - name: request
+    description: Make an HTTP request with optional headers, query params, and body.
+    inputs:
+      method: { type: string, required: true, description: 'HTTP method (GET, POST, PUT, DELETE, PATCH)' }
+      url: { type: string, required: true, description: Target URL }
+      headers: { type: object, required: false, description: Request headers as key-value pairs }
+      queryParams: { type: object, required: false, description: URL query parameters }
+      body: { type: string, required: false, description: Request body (JSON string for POST/PUT) }
+    outputs:
+      statusCode: { type: number, description: HTTP status code }
+      headers: { type: object, description: Response headers }
+      body: { type: string, description: Response body }

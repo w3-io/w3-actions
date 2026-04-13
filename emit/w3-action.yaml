@@ -1,0 +1,25 @@
+kind: primitive
+name: Emit
+version: 0.1.0
+repo: w3-io/w3-actions
+path: emit
+
+description: >
+  Emit structured events from workflow steps for observability and debugging.
+
+context: >
+  Built-in syscall for workflow observability. Events are captured by
+  the W3 runtime and available via the events API. Use to log business
+  events (not just debug output) that downstream systems can subscribe to.
+
+commands:
+  - name: emit
+    description: Emit a structured event with level, message, and optional data.
+    inputs:
+      level: { type: string, required: true, description: 'Event level (info, warn, error, debug)' }
+      message: { type: string, required: true, description: Human-readable message }
+      data: { type: object, required: false, description: Structured event data }
+      tags: { type: array, required: false, description: Tags for filtering }
+    outputs:
+      loggedAt: { type: string, description: Timestamp }
+      success: { type: boolean, description: Whether the event was recorded }
