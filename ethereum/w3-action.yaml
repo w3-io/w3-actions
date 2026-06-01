@@ -1,0 +1,244 @@
+kind: primitive
+name: Ethereum
+version: 0.1.0
+repo: w3-io/w3-actions
+path: ethereum
+
+description: >
+  EVM chain operations — read state, sign messages, call contracts,
+  deploy bytecode, transfer ETH or tokens. Same syscall on every EVM
+  chain (Ethereum, Avalanche, Base, Arbitrum, Optimism, Polygon, BNB).
+
+context: >
+  Built-in chain syscall, not a GHA action. Routes through the W3
+  bridge to the protocol's `ChainDispatcher::dispatch_ethereum`.
+  Signer is resolved via `resolve_evm_signer` from the workflow's
+  inline `signer:` field; supports `lit://`, `kms://`, `turnkey://`,
+  and raw hex keys. Per-namespace external signer credentials live
+  as `SecretUsage::Platform` secrets in the namespace store and are
+  picked up by `resolve_evm_signer::lookup_credential` at signer
+  construction. See W3-733 (merged 2026-06-01) for the typed
+  credential pipeline.
+
+commands:
+  # ── read-only ──────────────────────────────────────────────────
+  - name: get-balance
+    description: Read native-token balance for an address.
+    inputs:
+      network: { type: string, required: true, description: 'Chain key (e.g., ethereum, avalanche)' }
+      address: { type: string, required: true, description: '0x-prefixed Ethereum address' }
+    outputs:
+      balance: { type: string, description: 'Wei (decimal string)' }
+      balanceEth: { type: string, description: 'Same value formatted as ether' }
+
+  - name: get-token-balance
+    description: ERC-20 token balance.
+    inputs:
+      network: { type: string, required: true }
+      token: { type: string, required: true, description: 'Token contract address or known symbol' }
+      address: { type: string, required: true }
+    outputs:
+      balanceRaw: { type: string }
+      decimals: { type: string }
+
+  - name: get-token-allowance
+    description: ERC-20 allowance owner→spender.
+    inputs:
+      network: { type: string, required: true }
+      token: { type: string, required: true }
+      owner: { type: string, required: true }
+      spender: { type: string, required: true }
+    outputs:
+      allowanceRaw: { type: string }
+
+  - name: get-transaction
+    description: Read a transaction + its receipt.
+    inputs:
+      network: { type: string, required: true }
+      txHash: { type: string, required: true }
+    outputs:
+      status: { type: string }
+      blockNumber: { type: string }
+      gasUsed: { type: string }
+
+  - name: get-events
+    description: Filter event logs from a contract.
+    inputs:
+      network: { type: string, required: true }
+      contract: { type: string, required: true }
+      event: { type: string, required: true, description: 'Event signature (e.g., Transfer(address,address,uint256))' }
+      fromBlock: { type: string, required: false }
+      toBlock: { type: string, required: false }
+    outputs:
+      logs: { type: array }
+
+  - name: read-contract
+    description: Static call to a view/pure function.
+    inputs:
+      network: { type: string, required: true }
+      contract: { type: string, required: true }
+      method: { type: string, required: true, description: 'Function signature, e.g., "balanceOf(address)"' }
+      args: { type: array, required: false }
+      abi: { type: string, required: false, description: 'Optional JSON ABI fragment for non-standard methods' }
+    outputs:
+      result: { type: string }
+
+  - name: get-nft-metadata
+    description: Read ERC-721 / ERC-1155 token metadata.
+    inputs:
+      network: { type: string, required: true }
+      contract: { type: string, required: true }
+      tokenId: { type: string, required: true }
+    outputs:
+      tokenURI: { type: string }
+
+  - name: get-nft-owner
+    description: ERC-721 ownerOf(tokenId).
+    inputs:
+      network: { type: string, required: true }
+      contract: { type: string, required: true }
+      tokenId: { type: string, required: true }
+    outputs:
+      owner: { type: string }
+
+  - name: resolve-name
+    description: ENS name → address resolution.
+    inputs:
+      network: { type: string, required: true }
+      name: { type: string, required: true }
+    outputs:
+      address: { type: string }
+
+  - name: reverse-resolve-name
+    description: ENS address → primary name.
+    inputs:
+      network: { type: string, required: true }
+      address: { type: string, required: true }
+    outputs:
+      name: { type: string }
+
+  - name: get-signer-address
+    description: Return the address the configured signer signs as.
+    outputs:
+      address: { type: string }
+
+  - name: wait-for-transaction
+    description: Block until a tx is mined (or times out).
+    inputs:
+      network: { type: string, required: true }
+      txHash: { type: string, required: true }
+      timeoutSeconds: { type: number, required: false, description: 'Default 120s' }
+    outputs:
+      status: { type: string }
+      blockNumber: { type: string }
+
+  # ── signing (no broadcast) ─────────────────────────────────────
+  - name: sign-message
+    description: EIP-191 personal-message sign. Resolves signer via the workflow's `signer:` field.
+    inputs:
+      message: { type: string, required: true }
+    outputs:
+      signature: { type: string, description: '0x-prefixed 65-byte r||s||v' }
+      digest: { type: string, description: '0x-prefixed keccak256 of the EIP-191 prefixed message' }
+      address: { type: string, description: 'Address recovered from the signature' }
+
+  - name: sign-typed-data
+    description: EIP-712 typed-data sign.
+    inputs:
+      domain: { type: object, required: true }
+      types: { type: object, required: true }
+      primaryType: { type: string, required: true }
+      message: { type: object, required: true }
+    outputs:
+      signature: { type: string }
+      digest: { type: string }
+      address: { type: string }
+
+  # ── write (signed + broadcast) ─────────────────────────────────
+  - name: transfer
+    description: Send native ETH/AVAX/etc.
+    inputs:
+      network: { type: string, required: true }
+      to: { type: string, required: true }
+      amount: { type: string, required: true, description: 'Decimal amount (units below)' }
+      unit: { type: string, required: false, description: 'wei|gwei|ether (default: ether)' }
+      gasLimit: { type: string, required: false }
+      gasMultiplier: { type: string, required: false }
+    outputs:
+      txHash: { type: string }
+      blockNumber: { type: string }
+      gasUsed: { type: string }
+      status: { type: string }
+
+  - name: transfer-token
+    description: ERC-20 transfer.
+    inputs:
+      network: { type: string, required: true }
+      token: { type: string, required: true }
+      to: { type: string, required: true }
+      amount: { type: string, required: true, description: 'Decimal amount in token-native units' }
+    outputs:
+      txHash: { type: string }
+      status: { type: string }
+
+  - name: transfer-nft
+    description: ERC-721 safeTransferFrom.
+    inputs:
+      network: { type: string, required: true }
+      contract: { type: string, required: true }
+      tokenId: { type: string, required: true }
+      to: { type: string, required: true }
+    outputs:
+      txHash: { type: string }
+      status: { type: string }
+
+  - name: approve-token
+    description: ERC-20 approve.
+    inputs:
+      network: { type: string, required: true }
+      token: { type: string, required: true }
+      spender: { type: string, required: true }
+      amount: { type: string, required: true }
+    outputs:
+      txHash: { type: string }
+      status: { type: string }
+
+  - name: call-contract
+    description: Send a state-changing call to a contract.
+    inputs:
+      network: { type: string, required: true }
+      contract: { type: string, required: true }
+      method: { type: string, required: true, description: 'Function signature, e.g., "swap(bytes[],bytes32,uint256)"' }
+      args: { type: array, required: false }
+      value: { type: string, required: false, description: 'Native value in wei (decimal string)' }
+      abi: { type: string, required: false, description: 'Optional JSON ABI fragment' }
+      gasLimit: { type: string, required: false }
+      gasMultiplier: { type: string, required: false }
+    outputs:
+      txHash: { type: string }
+      blockNumber: { type: string }
+      gasUsed: { type: string }
+      status: { type: string }
+
+  - name: send-transaction
+    description: Send a raw transaction with custom calldata.
+    inputs:
+      network: { type: string, required: true }
+      to: { type: string, required: true }
+      data: { type: string, required: false, description: '0x-prefixed calldata' }
+      value: { type: string, required: false }
+    outputs:
+      txHash: { type: string }
+      status: { type: string }
+
+  - name: deploy-contract
+    description: Deploy a contract from bytecode + ABI-encoded constructor args.
+    inputs:
+      network: { type: string, required: true }
+      bytecode: { type: string, required: true, description: 'Creation bytecode with constructor args appended' }
+      gasLimit: { type: string, required: false }
+    outputs:
+      contractAddress: { type: string }
+      txHash: { type: string }
+      blockNumber: { type: string }
+      status: { type: string }
