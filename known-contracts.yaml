@@ -42,6 +42,7 @@ contracts:
     brand: "Circle"
     short: "USDC"
     name: "USDC (Avalanche)"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-circle-action/main/assets/usdc.svg"
     color: "#2775CA"
     kind: "stablecoin"
 
@@ -49,6 +50,7 @@ contracts:
     brand: "Circle"
     short: "USDC"
     name: "USDC (Ethereum)"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-circle-action/main/assets/usdc.svg"
     color: "#2775CA"
     kind: "stablecoin"
 
@@ -76,6 +78,7 @@ contracts:
     brand: "LFJ"
     short: "LBRouter"
     name: "LFJ LBRouter v2.2 (Avalanche)"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-actions/main/assets/lfj.png"
     color: "#FAA627"
     kind: "router"
     partner: "lfj"
