@@ -242,3 +242,214 @@ commands:
       txHash: { type: string }
       blockNumber: { type: string }
       status: { type: string }
+
+# ── Display block ──────────────────────────────────────────────────
+#
+# Consumed by the W3 Explorer to render branded step cards. Mirrors
+# the schema documented in
+# https://github.com/w3-io/w3-action-template/blob/main/docs/display-schema.md.
+#
+# Native chain-syscall steps (`ethereum:`) go through the same
+# manifest-driven render path partner actions use — the explorer
+# adapts the ChainStepBody into a synthetic `uses: w3-io/w3-actions/
+# ethereum@v0` step and reads this block for title, summary, and
+# chip resolution paths.
+
+display:
+  brand:
+    name: 'Ethereum'
+    short_name: 'EVM'
+    description: 'Read state, sign messages, call contracts, transfer value on any EVM chain'
+    logo: '/logos/ethereum.svg'
+    color: '#627EEA'
+
+  commands:
+    # ── read-only ────────────────────────────────────────────────
+    read-contract:
+      icon: 'info'
+      title_template: '{{ inputs.method }}'
+      subtitle_template: 'read · {{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Network', value: '{{ inputs.network | chain_pretty }}' }
+        - { label: 'Contract', value: '{{ inputs.contract | truncate_addr }}' }
+        - { label: 'Method', value: '{{ inputs.method }}' }
+        - { label: 'Result', value: '{{ outputs.result }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.contract'
+
+    get-balance:
+      icon: 'info'
+      title_template: 'Native balance · {{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Address', value: '{{ inputs.address | truncate_addr }}' }
+        - { label: 'Balance', value: '{{ outputs.balanceEth }}' }
+      chain_path: 'inputs.network'
+
+    get-token-balance:
+      icon: 'info'
+      title_template: 'Token balance · {{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Token', value: '{{ inputs.token | truncate_addr }}' }
+        - { label: 'Address', value: '{{ inputs.address | truncate_addr }}' }
+        - { label: 'Balance (raw)', value: '{{ outputs.balanceRaw }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.token'
+
+    get-token-allowance:
+      icon: 'info'
+      title_template: 'Token allowance · {{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Token', value: '{{ inputs.token | truncate_addr }}' }
+        - { label: 'Owner', value: '{{ inputs.owner | truncate_addr }}' }
+        - { label: 'Spender', value: '{{ inputs.spender | truncate_addr }}' }
+        - { label: 'Allowance (raw)', value: '{{ outputs.allowanceRaw }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.token'
+
+    get-events:
+      icon: 'info'
+      title_template: 'Event logs · {{ inputs.event }}'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Contract', value: '{{ inputs.contract | truncate_addr }}' }
+        - { label: 'Event', value: '{{ inputs.event }}' }
+        - { label: 'From block', value: '{{ inputs.fromBlock }}' }
+        - { label: 'To block', value: '{{ inputs.toBlock }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.contract'
+
+    get-transaction:
+      icon: 'info'
+      title_template: 'Read transaction'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Tx hash', value: '{{ inputs.txHash | truncate_addr }}' }
+        - { label: 'Status', value: '{{ outputs.status }}' }
+        - { label: 'Block', value: '{{ outputs.blockNumber }}' }
+        - { label: 'Gas used', value: '{{ outputs.gasUsed }}' }
+      chain_path: 'inputs.network'
+
+    wait-for-transaction:
+      icon: 'info'
+      title_template: 'Wait for transaction'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Tx hash', value: '{{ inputs.txHash | truncate_addr }}' }
+        - { label: 'Status', value: '{{ outputs.status }}' }
+        - { label: 'Block', value: '{{ outputs.blockNumber }}' }
+      chain_path: 'inputs.network'
+
+    # ── signing (no broadcast) ───────────────────────────────────
+    sign-message:
+      icon: 'lock'
+      title_template: 'Sign message (EIP-191)'
+      summary:
+        - { label: 'Signer', value: '{{ outputs.address | truncate_addr }}' }
+        - { label: 'Signature', value: '{{ outputs.signature | truncate_addr }}' }
+      signer_brand_path: 'inputs.signer'
+
+    sign-typed-data:
+      icon: 'lock'
+      title_template: 'Sign typed data (EIP-712)'
+      subtitle_template: '{{ inputs.primaryType }}'
+      summary:
+        - { label: 'Primary type', value: '{{ inputs.primaryType }}' }
+        - { label: 'Signer', value: '{{ outputs.address | truncate_addr }}' }
+        - { label: 'Signature', value: '{{ outputs.signature | truncate_addr }}' }
+      signer_brand_path: 'inputs.signer'
+
+    # ── write (signed + broadcast) ───────────────────────────────
+    call-contract:
+      icon: 'lock'
+      title_template: '{{ inputs.method }}'
+      subtitle_template: 'write · {{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Network', value: '{{ inputs.network | chain_pretty }}' }
+        - { label: 'Contract', value: '{{ inputs.contract | truncate_addr }}' }
+        - { label: 'Method', value: '{{ inputs.method }}' }
+        - { label: 'Value (wei)', value: '{{ inputs.value }}' }
+        - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+        - { label: 'Block', value: '{{ outputs.blockNumber }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.contract'
+      signer_brand_path: 'inputs.signer'
+      tx_hash_path: 'outputs.txHash'
+      chain_explorer:
+        avalanche: 'https://snowtrace.io/tx/{{tx_hash}}'
+        ethereum: 'https://etherscan.io/tx/{{tx_hash}}'
+        base: 'https://basescan.org/tx/{{tx_hash}}'
+        arbitrum: 'https://arbiscan.io/tx/{{tx_hash}}'
+        optimism: 'https://optimistic.etherscan.io/tx/{{tx_hash}}'
+        polygon: 'https://polygonscan.com/tx/{{tx_hash}}'
+
+    transfer:
+      icon: 'lock'
+      title_template: 'Transfer {{ inputs.amount }} {{ inputs.unit | default: \"ETH\" }}'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'To', value: '{{ inputs.to | truncate_addr }}' }
+        - { label: 'Amount', value: '{{ inputs.amount }} {{ inputs.unit | default: \"ETH\" }}' }
+        - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+      chain_path: 'inputs.network'
+      signer_brand_path: 'inputs.signer'
+      tx_hash_path: 'outputs.txHash'
+      chain_explorer:
+        avalanche: 'https://snowtrace.io/tx/{{tx_hash}}'
+        ethereum: 'https://etherscan.io/tx/{{tx_hash}}'
+        base: 'https://basescan.org/tx/{{tx_hash}}'
+        arbitrum: 'https://arbiscan.io/tx/{{tx_hash}}'
+        optimism: 'https://optimistic.etherscan.io/tx/{{tx_hash}}'
+        polygon: 'https://polygonscan.com/tx/{{tx_hash}}'
+
+    transfer-token:
+      icon: 'lock'
+      title_template: 'Transfer token'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Token', value: '{{ inputs.token | truncate_addr }}' }
+        - { label: 'To', value: '{{ inputs.to | truncate_addr }}' }
+        - { label: 'Amount', value: '{{ inputs.amount }}' }
+        - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.token'
+      signer_brand_path: 'inputs.signer'
+      tx_hash_path: 'outputs.txHash'
+
+    approve-token:
+      icon: 'lock'
+      title_template: 'Approve token'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Token', value: '{{ inputs.token | truncate_addr }}' }
+        - { label: 'Spender', value: '{{ inputs.spender | truncate_addr }}' }
+        - { label: 'Amount', value: '{{ inputs.amount }}' }
+        - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.token'
+      signer_brand_path: 'inputs.signer'
+      tx_hash_path: 'outputs.txHash'
+
+    send-transaction:
+      icon: 'lock'
+      title_template: 'Send raw transaction'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'To', value: '{{ inputs.to | truncate_addr }}' }
+        - { label: 'Value (wei)', value: '{{ inputs.value }}' }
+        - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+      chain_path: 'inputs.network'
+      destination_brand_path: 'inputs.to'
+      signer_brand_path: 'inputs.signer'
+      tx_hash_path: 'outputs.txHash'
+
+    deploy-contract:
+      icon: 'lock'
+      title_template: 'Deploy contract'
+      subtitle_template: '{{ inputs.network | chain_pretty }}'
+      summary:
+        - { label: 'Address', value: '{{ outputs.contractAddress | truncate_addr }}' }
+        - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+        - { label: 'Block', value: '{{ outputs.blockNumber }}' }
+      chain_path: 'inputs.network'
+      signer_brand_path: 'inputs.signer'
+      tx_hash_path: 'outputs.txHash'
