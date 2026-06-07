@@ -46,7 +46,7 @@ jobs:
 
       - name: Build all WASM bridges
         run: |
-          for action in encode json http emit audit; do
+          for action in encode json http emit; do
             echo "::group::$action"
             (cd "$action/wasm-bridge" && wasm-pack build --target nodejs --release)
             echo "::endgroup::"
@@ -55,7 +55,7 @@ jobs:
       - name: Verify WASM sizes
         run: |
           MAX_SIZE=2097152  # 2MB
-          for action in encode json http emit audit; do
+          for action in encode json http emit; do
             wasm=$(find "$action/wasm-bridge/pkg" -name "*_bg.wasm" | head -1)
             size=$(wc -c < "$wasm" | tr -d ' ')
             if [ "$size" -gt "$MAX_SIZE" ]; then
@@ -113,23 +113,6 @@ jobs:
           assert.strictEqual(filtered.length, 1);
 
           console.log('json: all tests passed');
-          "
-
-      - name: Test audit action
-        run: |
-          node -e "
-          const wasm = require('./audit/wasm-bridge/pkg/w3_audit_wasm.js');
-          const assert = require('assert');
-
-          wasm.reset_sequence();
-          const e1 = JSON.parse(wasm.create_entry('test', 'msg1', '{}', 'wf', 'job', 'step', '2026-01-01T00:00:00Z'));
-          const e2 = JSON.parse(wasm.create_entry('test', 'msg2', '{}', '', '', '', '2026-01-01T00:00:01Z'));
-          assert.strictEqual(e1.sequence, 1);
-          assert.strictEqual(e2.sequence, 2);
-          assert.strictEqual(e1.workflow, 'wf');
-          assert.strictEqual(e2.workflow, null);
-
-          console.log('audit: all tests passed');
           "
 
       - name: Test emit action
