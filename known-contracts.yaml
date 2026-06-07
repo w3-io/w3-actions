@@ -57,8 +57,8 @@ contracts:
     brand: "Pyth"
     short: "Pyth Oracle"
     name: "Pyth Pull Oracle (Avalanche)"
-    logo: "https://raw.githubusercontent.com/w3-io/w3-pyth-action/main/assets/logo.png"
-    color: "#E6DAFE"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-pyth-action/main/assets/pyth.svg"
+    color: "#5F22A8"
     kind: "other"
     partner: "pyth"
 
@@ -66,8 +66,8 @@ contracts:
     brand: "Pyth"
     short: "PythGatedSwap"
     name: "Pyth-gated swap (LFJ-routed)"
-    logo: "https://raw.githubusercontent.com/w3-io/w3-pyth-action/main/assets/logo.png"
-    color: "#E6DAFE"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-pyth-action/main/assets/pyth.svg"
+    color: "#5F22A8"
     kind: "router"
     partner: "pyth"
 
