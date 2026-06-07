@@ -1,0 +1,153 @@
+# Address → brand/short/name registry.
+#
+# The W3 Explorer fetches this file at runtime and consults it when
+# resolving any step's `destination_brand_path` (declared on the
+# command's display block in the action's manifest). The matching
+# entry drives the destination-brand chip on the card header.
+#
+# # Keys
+#
+# Each top-level key is a lowercase 0x-prefixed Ethereum address.
+# Entries for the same logical contract on different chains use
+# different addresses; symbol lookups intentionally don't disambiguate
+# across chains (callers needing chain-specific identity must use the
+# address).
+#
+# # Required fields
+#
+# - brand: display name of the partner organisation (e.g. "Circle")
+# - short: short symbol (e.g. "USDC")
+# - name: full human-readable name (e.g. "USDC (Avalanche)")
+# - kind: one of stablecoin | vault | router | other
+#
+# # Optional fields
+#
+# - logo: same allowlist as ActionDisplay.logo —
+#   local `/logos/<file>.{svg,png,webp}` (chain-native bundled in
+#   explorer) or `https://raw.githubusercontent.com/...` (partner
+#   assets hosted in action repos)
+# - color: hex string (`#RRGGBB`) used to tint the no-logo fallback
+# - tier: low | mid | high — used by yield-vault widgets
+# - partner: opaque partner identifier, useful for cross-referencing
+#   action manifests
+#
+# # Adding an entry
+#
+# Drop a new key below. Explorer picks it up next render. No
+# explorer change needed.
+
+contracts:
+  # ── Stablecoins ────────────────────────────────────────────────
+  "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e":
+    brand: "Circle"
+    short: "USDC"
+    name: "USDC (Avalanche)"
+    color: "#2775CA"
+    kind: "stablecoin"
+
+  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48":
+    brand: "Circle"
+    short: "USDC"
+    name: "USDC (Ethereum)"
+    color: "#2775CA"
+    kind: "stablecoin"
+
+  # ── Pyth (Avalanche) ───────────────────────────────────────────
+  "0x4305fb66699c3b2702d4d05cf36551390a4c69c6":
+    brand: "Pyth"
+    short: "Pyth Oracle"
+    name: "Pyth Pull Oracle (Avalanche)"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-pyth-action/main/assets/logo.png"
+    color: "#E6DAFE"
+    kind: "other"
+    partner: "pyth"
+
+  "0x86359b1b41cccf02a8d22388476b4a2abece96e1":
+    brand: "Pyth"
+    short: "PythGatedSwap"
+    name: "Pyth-gated swap (LFJ-routed)"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-pyth-action/main/assets/logo.png"
+    color: "#E6DAFE"
+    kind: "router"
+    partner: "pyth"
+
+  # ── DEX routers (Avalanche) ────────────────────────────────────
+  "0x18556da13313f3532c54711497a8fedac273220e":
+    brand: "LFJ"
+    short: "LBRouter"
+    name: "LFJ LBRouter v2.2 (Avalanche)"
+    color: "#FAA627"
+    kind: "router"
+    partner: "lfj"
+
+  # ── Tokens (Avalanche) ─────────────────────────────────────────
+  "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7":
+    brand: "Avalanche"
+    short: "WAVAX"
+    name: "Wrapped AVAX (Avalanche)"
+    color: "#E84142"
+    kind: "other"
+
+  "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab":
+    brand: "Avalanche Bridge"
+    short: "WETH.e"
+    name: "Wrapped Ether (Avalanche-bridged)"
+    color: "#627EEA"
+    kind: "other"
+
+  "0x152b9d0fdc40c096757f570a51e494bd4b943e50":
+    brand: "Avalanche Bridge"
+    short: "BTC.b"
+    name: "Bitcoin (Avalanche-bridged)"
+    color: "#F7931A"
+    kind: "other"
+
+  # ── OpenTrade-managed vaults (Ethereum) ────────────────────────
+  "0x09ca60ca323a6313ae144778c3ebdfccfbb5e5d2":
+    brand: "Fidelity"
+    short: "XMMF"
+    name: "Fidelity USDC Money Market Fund"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-opentrade-action/faf5b693787e0ff3497f0b7e0af428c67b57ce3c/assets/fidelity.svg"
+    color: "#368727"
+    kind: "vault"
+    tier: "low"
+    partner: "opentrade"
+
+  "0x1d7e71d0cb499c31349df3e9205a4b16bccf2536":
+    brand: "OpenTrade"
+    short: "XHYC"
+    name: "Corporate High Yield Bond Vault"
+    color: "#F59E0B"
+    kind: "vault"
+    tier: "mid"
+    partner: "opentrade"
+
+  "0x39dac87be293dc855b60fedd89667364865378cc":
+    brand: "VaultOS"
+    short: "VaultOS"
+    name: "VaultOS (W3 managed yield smart-vault)"
+    logo: "/logos/w3-yellow.svg"
+    color: "#FFD700"
+    kind: "vault"
+    tier: "high"
+    partner: "w3"
+
+  "0x061329361e0f163125225bf71a1e5af954b46869":
+    brand: "Franklin Templeton"
+    short: "XFTB"
+    name: "Franklin Templeton Benji MMF Vault"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-opentrade-action/9eb7d8845a1645df0de02cd876c50c2d5e81c63b/assets/franklin-templeton.svg"
+    color: "#1B3A6F"
+    kind: "vault"
+    tier: "low"
+    partner: "opentrade"
+
+  "0xad6605f4987031fd2d6d6816be53eb7c5b764bf7":
+    brand: "WisdomTree"
+    short: "XTBT"
+    name: "WisdomTree T-Bill Vault"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-opentrade-action/9eb7d8845a1645df0de02cd876c50c2d5e81c63b/assets/wisdom-tree.svg"
+    color: "#1E3A5F"
+    kind: "vault"
+    tier: "mid"
+    partner: "opentrade"
