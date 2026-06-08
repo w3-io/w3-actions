@@ -1,0 +1,34 @@
+# Signer URI scheme → brand metadata.
+#
+# Signer schemes (`lit://`, `fordefi://`, `turnkey://`, `kms://`)
+# are protocol-level concepts — they correspond to dispatchers in the
+# protocol's `resolve_evm_signer` (and equivalents for non-EVM chains).
+# Each scheme represents a meaningfully different custody path that
+# the workflow operator should see at a glance on every signed
+# transaction card.
+#
+# The W3 Explorer fetches this file at runtime and renders a chip on
+# every step whose display block declares `signer_brand_path` pointing
+# at a value starting with one of these schemes. Raw hex keys and
+# unrecognised schemes render nothing.
+#
+# # Adding a new signer
+#
+# 1. Add an entry below with the scheme prefix as the key
+# 2. Drop the brand logo in `assets/<slug>.svg` (or reference a raw
+#    URL on the action repo that implements this signer)
+# 3. The explorer picks it up next render — no explorer change needed
+#
+# # Hosting
+#
+# Logos resolve against the explorer's same allowlist as
+# `ActionDisplay.logo`: local `/logos/<file>.<ext>` (chain logos
+# bundled in the explorer) or `https://raw.githubusercontent.com/...`
+# (everything partner-specific, including these).
+
+signers:
+  "lit://":
+    brand: "Lit Protocol"
+    logo: "https://raw.githubusercontent.com/w3-io/w3-actions/main/assets/lit.svg"
+    color: "#FF3D00"
+    description: "PKP signing via Lit's TEE network"
