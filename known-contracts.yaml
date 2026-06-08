@@ -72,6 +72,13 @@ contracts:
     color: "#5F22A8"
     kind: "router"
     partner: "pyth"
+    # PythGatedSwap.swap() verifies the Pyth band on-chain and then
+    # forwards into LFJ's LBRouter for execution. Surfacing LFJ as a
+    # partner-brand chip makes the routing visible at a glance — the
+    # explorer renders both the primary Pyth chip and this LFJ chip.
+    partner_brand: "LFJ"
+    partner_logo: "https://raw.githubusercontent.com/w3-io/w3-actions/main/assets/lfj.png"
+    partner_color: "#FAA627"
 
   # ── DEX routers (Avalanche) ────────────────────────────────────
   "0x18556da13313f3532c54711497a8fedac273220e":
