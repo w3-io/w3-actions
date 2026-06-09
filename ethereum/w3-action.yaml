@@ -326,7 +326,7 @@ display:
         - { label: 'Tx hash', value: '{{ inputs.txHash | truncate_addr }}' }
         - { label: 'Status', value: '{{ outputs.status }}' }
         - { label: 'Block', value: '{{ outputs.blockNumber }}' }
-        - { label: 'Gas used', value: '{{ outputs.gasUsed }}' }
+        - { label: 'Gas used', value: '{{ outputs.gasUsed | format_gas }}' }
       chain_path: 'inputs.network'
 
     wait-for-transaction:
@@ -370,6 +370,7 @@ display:
         - { label: 'Value (wei)', value: '{{ inputs.value }}' }
         - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
         - { label: 'Block', value: '{{ outputs.blockNumber }}' }
+        - { label: 'Gas used', value: '{{ outputs.gasUsed | format_gas }}' }
       chain_path: 'inputs.network'
       destination_brand_path: 'inputs.contract'
       signer_brand_path: 'inputs.signer'
@@ -390,6 +391,8 @@ display:
         - { label: 'To', value: '{{ inputs.to | truncate_addr }}' }
         - { label: 'Amount', value: '{{ inputs.amount }} {{ inputs.unit | default: \"ETH\" }}' }
         - { label: 'Tx', value: '{{ outputs.txHash | truncate_addr }}' }
+        - { label: 'Block', value: '{{ outputs.blockNumber }}' }
+        - { label: 'Gas used', value: '{{ outputs.gasUsed | format_gas }}' }
       chain_path: 'inputs.network'
       signer_brand_path: 'inputs.signer'
       tx_hash_path: 'outputs.txHash'
